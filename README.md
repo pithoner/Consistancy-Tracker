@@ -4,7 +4,7 @@ A small habit/task tracker you can run locally.
 
 You add tasks, check off what you did today, and get a year view at the bottom with a GitHub-style heatmap. It uses SQLite, so there is no separate database to set up.
 
-![Consistency Tracker screenshot](docs/screenshot.jpeg)
+![Consistency Tracker screenshot](docs/screenshot_dark.jpeg)
 
 ## What it does
 
@@ -15,6 +15,7 @@ You add tasks, check off what you did today, and get a year view at the bottom w
 - Day details
 - Stats
 - Archive, unarchive, and delete tasks
+- Darkmode/lightmode
 
 ## Local run
 
