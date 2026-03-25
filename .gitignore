@@ -1,0 +1,5 @@
+﻿node_modules/
+.env
+tracker.db
+tracker.db-shm
+tracker.db-wal

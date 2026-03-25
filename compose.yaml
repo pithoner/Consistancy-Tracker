@@ -1,0 +1,17 @@
+services:
+  consistency-tracker:
+    build: .
+    container_name: consistency-tracker
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      PORT: 3000
+      DATA_DIR: /app/data
+    volumes:
+      - tracker-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  tracker-data:

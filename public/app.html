@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consistency Tracker</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>Consistency Tracker</h1>
+      <form method="post" action="/logout">
+        <button type="submit" class="ghost-btn">Logout</button>
+      </form>
+    </header>
+
+    <main class="layout">
+      <section class="card section-add">
+        <h2>Add Task</h2>
+        <form id="habit-form" class="inline-form">
+          <input id="habit-name" type="text" placeholder="e.g. 20 min workout" maxlength="60" required />
+          <input id="weekly-target" type="number" min="1" max="7" value="4" title="Times per week" />
+          <button type="submit">Add</button>
+        </form>
+        <p class="help-text">Weekly target is times per week (1-7).</p>
+      </section>
+
+      <section class="card section-stats">
+        <h2>Stats</h2>
+        <div id="stats" class="stats-grid"></div>
+      </section>
+
+      <section class="card section-today">
+        <div class="section-head">
+          <h2>Today's Tasks</h2>
+          <button id="reload-btn" class="ghost-btn" type="button">Refresh</button>
+        </div>
+        <div id="today-list" class="today-list"></div>
+      </section>
+
+      <section class="card section-archived">
+        <h2>Archived Tasks</h2>
+        <div id="archived-list" class="archived-list"></div>
+      </section>
+
+      <section class="card section-heatmap">
+        <h2>Year Heatmap</h2>
+        <p class="help-text">Darker squares = more tasks completed that day.</p>
+        <div class="heatmap-scroll">
+          <div id="heatmap-inner" class="heatmap-inner">
+            <div class="heatmap-grid">
+              <div class="days-spacer"></div>
+              <div id="month-markers" class="month-markers"></div>
+
+              <div id="day-labels" class="day-labels" aria-hidden="true">
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+                <span>Sun</span>
+              </div>
+              <div id="year-heatmap" class="year-heatmap"></div>
+            </div>
+          </div>
+        </div>
+        <div class="legend">
+          <span>Less</span>
+          <span class="legend-box level-0"></span>
+          <span class="legend-box level-1"></span>
+          <span class="legend-box level-2"></span>
+          <span class="legend-box level-3"></span>
+          <span class="legend-box level-4"></span>
+          <span>More</span>
+        </div>
+      </section>
+
+      <section class="card section-details">
+        <h2 id="day-title">Day Details</h2>
+        <div id="day-summary" class="help-text"></div>
+        <div id="day-details" class="day-details"></div>
+      </section>
+    </main>
+
+    <template id="today-item-template">
+      <div class="today-item">
+        <div class="today-main">
+          <label class="check-row">
+            <input class="today-checkbox" type="checkbox" />
+            <span class="today-name"></span>
+          </label>
+          <div class="weekly-row">
+            <span class="weekly-text"></span>
+            <div class="weekly-progress">
+              <div class="weekly-progress-fill"></div>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="ghost-btn goal-habit" type="button">Goal</button>
+          <button class="ghost-btn edit-habit" type="button">Edit</button>
+          <button class="ghost-btn archive-habit" type="button">Archive</button>
+        </div>
+      </div>
+    </template>
+
+    <template id="archived-item-template">
+      <div class="archived-item">
+        <span class="archived-name"></span>
+        <div class="actions">
+          <button class="ghost-btn edit-habit" type="button">Edit</button>
+          <button class="ghost-btn unarchive-habit" type="button">Unarchive</button>
+          <button class="danger-btn delete-habit" type="button">Delete</button>
+        </div>
+      </div>
+    </template>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+
