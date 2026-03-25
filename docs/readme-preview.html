@@ -33,9 +33,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 18px 24px;
-        background: #fff;
+        padding: 16px 24px;
         border-bottom: 1px solid var(--line);
+        background: #fff;
       }
 
       .topbar h1 {
@@ -43,12 +43,30 @@
         font-size: 28px;
       }
 
-      .logout {
-        border: 1px solid var(--line);
+      .ghost-btn,
+      .primary-btn,
+      .danger-btn {
         border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+
+      .ghost-btn {
+        border: 1px solid var(--line);
         background: #fff;
         color: var(--text);
-        padding: 8px 12px;
+      }
+
+      .primary-btn {
+        border: 1px solid var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .danger-btn {
+        border: 1px solid var(--danger);
+        background: #fff1f2;
+        color: #9f1239;
       }
 
       .layout {
@@ -72,10 +90,17 @@
       .today { grid-column: span 7; }
       .archived { grid-column: span 5; }
       .heatmap { grid-column: span 12; }
+      .details { grid-column: span 12; }
 
       h2 {
         margin: 0 0 12px;
         font-size: 20px;
+      }
+
+      .help {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 8px;
       }
 
       .input-row {
@@ -89,17 +114,14 @@
         border-radius: 8px;
         background: #fff;
         padding: 10px 12px;
-        color: #9ca3af;
+        color: #6b7280;
       }
 
       .fake-input { flex: 1; }
-      .fake-small { width: 92px; text-align: center; color: var(--text); }
-      .fake-btn {
-        border: 1px solid var(--accent);
-        border-radius: 8px;
-        background: var(--accent);
-        color: #fff;
-        padding: 10px 14px;
+      .fake-small {
+        width: 92px;
+        text-align: center;
+        color: var(--text);
       }
 
       .stats-grid {
@@ -115,9 +137,9 @@
       }
 
       .stat-label {
+        display: block;
         color: var(--muted);
         font-size: 12px;
-        display: block;
       }
 
       .stat-value {
@@ -125,14 +147,32 @@
         font-weight: 700;
       }
 
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .task-list,
+      .archived-list,
+      .detail-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .task,
+      .archived-item,
+      .detail-item {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+      }
+
       .task {
         display: flex;
         justify-content: space-between;
         gap: 12px;
-        padding: 12px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        margin-bottom: 10px;
       }
 
       .task-main {
@@ -150,7 +190,18 @@
         width: 18px;
         height: 18px;
         border-radius: 4px;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .check.done {
+        border-color: var(--accent);
         background: var(--accent);
+      }
+
+      .task-name.done {
+        color: var(--muted);
+        text-decoration: line-through;
       }
 
       .weekly-text {
@@ -160,37 +211,40 @@
       }
 
       .weekly-bar {
-        width: 100%;
         height: 8px;
-        border-radius: 999px;
+        width: 100%;
         background: #e5e7eb;
+        border-radius: 999px;
         overflow: hidden;
       }
 
       .weekly-fill {
         height: 100%;
-        background: #3aad61;
         border-radius: 999px;
+        background: #3aad61;
+      }
+
+      .weekly-fill.met {
+        background: #1f7a41;
       }
 
       .actions {
         display: flex;
         gap: 8px;
+        flex-wrap: wrap;
+        align-content: flex-start;
       }
 
-      .chip {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 8px 10px;
-        background: #fff;
-        font-size: 13px;
+      .archived-list {
+        max-height: 260px;
+        overflow: hidden;
       }
 
-      .archived-box {
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 10px;
+      .archived-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
       }
 
       .heat-top {
@@ -242,18 +296,46 @@
         border: 1px solid rgba(27, 31, 35, 0.08);
       }
 
-      .l0 { background: #d7dde4; }
-      .l0b { background: #c6ced8; }
+      .m0l0 { background: #d7dde4; }
+      .m1l0 { background: #c6ced8; }
       .l1 { background: #b5e3bf; }
       .l2 { background: #7ccf8f; }
       .l3 { background: #3aad61; }
       .l4 { background: #1f7a41; }
+
+      .detail-head {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+
+      .detail-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .badge {
+        font-size: 12px;
+        border-radius: 999px;
+        padding: 2px 8px;
+      }
+
+      .badge.done {
+        background: #dcfce7;
+        color: #14532d;
+      }
+
+      .badge.not-done {
+        background: #f3f4f6;
+        color: #4b5563;
+      }
     </style>
   </head>
   <body>
     <header class="topbar">
       <h1>Consistency Tracker</h1>
-      <div class="logout">Logout</div>
+      <div class="ghost-btn">Logout</div>
     </header>
 
     <main class="layout">
@@ -262,63 +344,138 @@
         <div class="input-row">
           <div class="fake-input">e.g. 20 min workout</div>
           <div class="fake-small">4</div>
-          <div class="fake-btn">Add</div>
+          <div class="primary-btn">Add</div>
         </div>
+        <div class="help">Weekly target is times per week (1-7).</div>
       </section>
 
       <section class="card stats">
         <h2>Stats</h2>
         <div class="stats-grid">
-          <div class="stat"><span class="stat-label">Active Tasks</span><span class="stat-value">5</span></div>
-          <div class="stat"><span class="stat-label">Weekly Goals Met</span><span class="stat-value">3/5</span></div>
-          <div class="stat"><span class="stat-label">Current Streak</span><span class="stat-value">9</span></div>
-          <div class="stat"><span class="stat-label">Completion Rate</span><span class="stat-value">78.4%</span></div>
+          <div class="stat"><span class="stat-label">Active Tasks</span><span class="stat-value">6</span></div>
+          <div class="stat"><span class="stat-label">Archived Tasks</span><span class="stat-value">3</span></div>
+          <div class="stat"><span class="stat-label">Weekly Goals Met</span><span class="stat-value">4/6</span></div>
+          <div class="stat"><span class="stat-label">Current Streak</span><span class="stat-value">12</span></div>
         </div>
       </section>
 
       <section class="card today">
-        <h2>Today's Tasks</h2>
-        <div class="task">
-          <div class="task-main">
-            <div class="task-title"><div class="check"></div><strong>Workout</strong></div>
-            <div class="weekly-text">3/4 this week</div>
-            <div class="weekly-bar"><div class="weekly-fill" style="width: 75%"></div></div>
-          </div>
-          <div class="actions"><div class="chip">Goal</div><div class="chip">Edit</div><div class="chip">Archive</div></div>
+        <div class="section-head">
+          <h2>Today's Tasks</h2>
+          <div class="ghost-btn">Refresh</div>
         </div>
-        <div class="task">
-          <div class="task-main">
-            <div class="task-title"><div class="check"></div><strong>Read 20 min</strong></div>
-            <div class="weekly-text">5/5 this week</div>
-            <div class="weekly-bar"><div class="weekly-fill" style="width: 100%; background: #1f7a41"></div></div>
+        <div class="task-list">
+          <div class="task">
+            <div class="task-main">
+              <div class="task-title">
+                <div class="check done"></div>
+                <strong class="task-name done">Workout</strong>
+              </div>
+              <div class="weekly-text">3/4 this week</div>
+              <div class="weekly-bar"><div class="weekly-fill" style="width:75%"></div></div>
+            </div>
+            <div class="actions">
+              <div class="ghost-btn">Goal</div>
+              <div class="ghost-btn">Edit</div>
+              <div class="ghost-btn">Archive</div>
+            </div>
           </div>
-          <div class="actions"><div class="chip">Goal</div><div class="chip">Edit</div><div class="chip">Archive</div></div>
+          <div class="task">
+            <div class="task-main">
+              <div class="task-title">
+                <div class="check done"></div>
+                <strong class="task-name done">Read 20 min</strong>
+              </div>
+              <div class="weekly-text">5/5 this week</div>
+              <div class="weekly-bar"><div class="weekly-fill met" style="width:100%"></div></div>
+            </div>
+            <div class="actions">
+              <div class="ghost-btn">Goal</div>
+              <div class="ghost-btn">Edit</div>
+              <div class="ghost-btn">Archive</div>
+            </div>
+          </div>
+          <div class="task">
+            <div class="task-main">
+              <div class="task-title">
+                <div class="check"></div>
+                <strong class="task-name">Stretch</strong>
+              </div>
+              <div class="weekly-text">2/3 this week</div>
+              <div class="weekly-bar"><div class="weekly-fill" style="width:67%"></div></div>
+            </div>
+            <div class="actions">
+              <div class="ghost-btn">Goal</div>
+              <div class="ghost-btn">Edit</div>
+              <div class="ghost-btn">Archive</div>
+            </div>
+          </div>
+          <div class="task">
+            <div class="task-main">
+              <div class="task-title">
+                <div class="check done"></div>
+                <strong class="task-name done">Journal</strong>
+              </div>
+              <div class="weekly-text">7/7 this week</div>
+              <div class="weekly-bar"><div class="weekly-fill met" style="width:100%"></div></div>
+            </div>
+            <div class="actions">
+              <div class="ghost-btn">Goal</div>
+              <div class="ghost-btn">Edit</div>
+              <div class="ghost-btn">Archive</div>
+            </div>
+          </div>
         </div>
       </section>
 
       <section class="card archived">
         <h2>Archived Tasks</h2>
-        <div class="archived-box">Daily coding practice (3x/week)</div>
-        <div class="archived-box">Stretching (4x/week)</div>
+        <div class="archived-list">
+          <div class="archived-item">
+            <span>Cold shower (4x/week)</span>
+            <div class="actions">
+              <div class="ghost-btn">Edit</div>
+              <div class="ghost-btn">Unarchive</div>
+              <div class="danger-btn">Delete</div>
+            </div>
+          </div>
+          <div class="archived-item">
+            <span>Study Spanish (5x/week)</span>
+            <div class="actions">
+              <div class="ghost-btn">Edit</div>
+              <div class="ghost-btn">Unarchive</div>
+              <div class="danger-btn">Delete</div>
+            </div>
+          </div>
+          <div class="archived-item">
+            <span>Night walk (3x/week)</span>
+            <div class="actions">
+              <div class="ghost-btn">Edit</div>
+              <div class="ghost-btn">Unarchive</div>
+              <div class="danger-btn">Delete</div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="card heatmap">
         <h2>Year Heatmap</h2>
+        <div class="help" style="margin:0 0 8px 0">Darker squares = more tasks completed that day.</div>
         <div class="heat-top">
           <div></div>
           <div class="month-row">
-            <span style="left: 0px">Jan</span>
-            <span style="left: 95px">Feb</span>
-            <span style="left: 180px">Mar</span>
-            <span style="left: 275px">Apr</span>
-            <span style="left: 365px">May</span>
-            <span style="left: 455px">Jun</span>
-            <span style="left: 545px">Jul</span>
-            <span style="left: 640px">Aug</span>
-            <span style="left: 730px">Sep</span>
-            <span style="left: 820px">Oct</span>
-            <span style="left: 915px">Nov</span>
-            <span style="left: 1005px">Dec</span>
+            <span style="left:0px">Jan</span>
+            <span style="left:94px">Feb</span>
+            <span style="left:180px">Mar</span>
+            <span style="left:274px">Apr</span>
+            <span style="left:364px">May</span>
+            <span style="left:454px">Jun</span>
+            <span style="left:544px">Jul</span>
+            <span style="left:638px">Aug</span>
+            <span style="left:728px">Sep</span>
+            <span style="left:818px">Oct</span>
+            <span style="left:912px">Nov</span>
+            <span style="left:1002px">Dec</span>
           </div>
         </div>
         <div class="heat-body">
@@ -326,19 +483,44 @@
             <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
           </div>
           <div class="grid">
-            <div class="cell l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l0"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l0"></div>
-            <div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l0b"></div>
-            <div class="cell l0"></div><div class="cell l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell l1"></div>
-            <div class="cell l0b"></div><div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l1"></div><div class="cell l0b"></div>
-            <div class="cell l0"></div><div class="cell l1"></div><div class="cell l1"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l2"></div><div class="cell l0"></div>
-            <div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l0b"></div>
-            <div class="cell l0"></div><div class="cell l0"></div><div class="cell l1"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l0"></div>
-            <div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l0b"></div>
-            <div class="cell l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l0"></div>
-            <div class="cell l0b"></div><div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l0b"></div>
-            <div class="cell l0"></div><div class="cell l1"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l0"></div>
-            <div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell l0b"></div>
+            <div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell m0l0"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell l1"></div>
+            <div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l1"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell m1l0"></div>
+            <div class="cell m0l0"></div><div class="cell m0l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell m0l0"></div>
+            <div class="cell m1l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell m1l0"></div>
           </div>
+        </div>
+      </section>
+
+      <section class="card details">
+        <h2>Day Details - Tuesday, Mar 25, 2026 (Day #84)</h2>
+        <div class="detail-head">4 of 6 active tasks completed</div>
+        <div class="detail-list">
+          <div class="detail-item"><span>Workout (4x/week)</span><span class="badge done">Done</span></div>
+          <div class="detail-item"><span>Read 20 min (5x/week)</span><span class="badge done">Done</span></div>
+          <div class="detail-item"><span>Stretch (3x/week)</span><span class="badge not-done">Not done</span></div>
+          <div class="detail-item"><span>Journal (7x/week)</span><span class="badge done">Done</span></div>
+          <div class="detail-item"><span>Deep work block (5x/week)</span><span class="badge done">Done</span></div>
+          <div class="detail-item"><span>Walk after dinner (4x/week)</span><span class="badge not-done">Not done</span></div>
         </div>
       </section>
     </main>
