@@ -85,12 +85,12 @@
         padding: 16px;
       }
 
-      .add { grid-column: span 4; }
-      .stats { grid-column: span 8; }
-      .today { grid-column: span 7; }
-      .archived { grid-column: span 5; }
-      .heatmap { grid-column: span 12; }
-      .details { grid-column: span 12; }
+      .today { grid-column: 1 / span 8; grid-row: 1; }
+      .add { grid-column: 9 / span 4; grid-row: 1; }
+      .stats { grid-column: 1 / -1; grid-row: 2; }
+      .heatmap { grid-column: 1 / -1; grid-row: 3; }
+      .details { grid-column: 1 / span 8; grid-row: 4; }
+      .archived { grid-column: 9 / span 4; grid-row: 4; }
 
       h2 {
         margin: 0 0 12px;
@@ -355,7 +355,10 @@
           <div class="stat"><span class="stat-label">Active Tasks</span><span class="stat-value">6</span></div>
           <div class="stat"><span class="stat-label">Archived Tasks</span><span class="stat-value">3</span></div>
           <div class="stat"><span class="stat-label">Weekly Goals Met</span><span class="stat-value">4/6</span></div>
+          <div class="stat"><span class="stat-label">Completed (All Time)</span><span class="stat-value">438</span></div>
+          <div class="stat"><span class="stat-label">Completion Rate</span><span class="stat-value">78%</span></div>
           <div class="stat"><span class="stat-label">Current Streak</span><span class="stat-value">12</span></div>
+          <div class="stat"><span class="stat-label">Best Streak</span><span class="stat-value">29</span></div>
         </div>
       </section>
 
@@ -418,6 +421,36 @@
               </div>
               <div class="weekly-text">7/7 this week</div>
               <div class="weekly-bar"><div class="weekly-fill met" style="width:100%"></div></div>
+            </div>
+            <div class="actions">
+              <div class="ghost-btn">Goal</div>
+              <div class="ghost-btn">Edit</div>
+              <div class="ghost-btn">Archive</div>
+            </div>
+          </div>
+          <div class="task">
+            <div class="task-main">
+              <div class="task-title">
+                <div class="check done"></div>
+                <strong class="task-name done">Deep work block</strong>
+              </div>
+              <div class="weekly-text">4/5 this week</div>
+              <div class="weekly-bar"><div class="weekly-fill" style="width:80%"></div></div>
+            </div>
+            <div class="actions">
+              <div class="ghost-btn">Goal</div>
+              <div class="ghost-btn">Edit</div>
+              <div class="ghost-btn">Archive</div>
+            </div>
+          </div>
+          <div class="task">
+            <div class="task-main">
+              <div class="task-title">
+                <div class="check"></div>
+                <strong class="task-name">Walk after dinner</strong>
+              </div>
+              <div class="weekly-text">3/4 this week</div>
+              <div class="weekly-bar"><div class="weekly-fill" style="width:75%"></div></div>
             </div>
             <div class="actions">
               <div class="ghost-btn">Goal</div>
