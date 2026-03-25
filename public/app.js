@@ -411,5 +411,4 @@ habitForm.addEventListener('submit', async (event) => {
 });
 
 reloadBtn.addEventListener('click', () => load(state ? state.selectedDay : ''));
-
 load();
