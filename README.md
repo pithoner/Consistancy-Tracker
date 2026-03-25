@@ -1,53 +1,75 @@
-﻿# Consistency Tracker
+# Consistency Tracker
 
-Simple local web app to track tasks with daily checkoffs and a GitHub-style yearly heatmap.
+A small habit/task tracker you can run locally.
 
-## Features
-- One-password login (session-based)
-- Add tasks with weekly targets (1-7 times per week)
-- Edit task names and weekly targets
-- Archive tasks instead of deleting, plus unarchive support
-- Optional permanent delete from archived tasks
-- Today's Tasks section with weekly progress bars per task
-- Year heatmap where color gets darker as more active tasks are completed
-- Month markers on the heatmap for easier navigation
-- Click any day to see which active tasks were done vs not done
-- Stats panel (completion rate, streaks, totals, weekly goals met)
-- SQLite database file (`tracker.db`)
+You add tasks, check off what you did today, and get a year view at the bottom with a GitHub-style heatmap. It uses SQLite, so there is no separate database to set up.
 
-## Run locally
-1. Install Node.js 20+.
-2. Install dependencies:
-   - `npm install`
-3. Create env file:
-   - `cp .env.example .env`
-4. Edit `.env` and set your password + session secret.
-5. Start the app:
-   - `npm start`
-6. Open `http://localhost:3000`
+![Consistency Tracker screenshot](docs/screenshot.png)
 
-## Run with Docker
-1. Create env file:
-   - `cp .env.example .env`
-2. Edit `.env` and set your password + session secret.
-3. Build and start:
-   - `docker compose up -d --build`
-4. Open `http://localhost:3000`
-5. Stop later with:
-   - `docker compose down`
+## What it does
 
-## Deploy on Ubuntu server (local hosting)
-1. Clone this repo onto your server.
-2. Install Docker Engine + Docker Compose plugin.
-3. In the project folder run:
-   - `cp .env.example .env`
-   - edit `.env`
-   - `docker compose up -d --build`
-4. Open `http://your-server-ip:3000`
+- Password login
+- Daily task checklist
+- Weekly targets per task
+- Year heatmap
+- Day details
+- Stats
+- Archive, unarchive, and delete tasks
 
-Data is stored in the Docker volume `tracker-data`, so it persists across container restarts and rebuilds.
+## Local run
+
+Requirements:
+- Node.js 20+
+
+Commands:
+
+```bash
+npm install
+cp .env.example .env
+npm start
+```
+
+Then open [http://localhost:3000](http://localhost:3000).
+
+Set these in `.env`:
+- `APP_PASSWORD`
+- `SESSION_SECRET`
+
+## Docker run
+
+This is the easiest way to run it on a server.
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
+
+Then open [http://localhost:3000](http://localhost:3000).
+
+Stop it with:
+
+```bash
+docker compose down
+```
+
+The SQLite database is stored in the Docker volume `tracker-data`, so your data stays there when the container restarts or gets rebuilt.
+
+## Ubuntu server
+
+Clone the repo, go into the folder, then:
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
+
+Open:
+
+```bash
+http://your-server-ip:3000
+```
 
 ## Notes
-- Default fallback password is `changeme123` if `.env` is missing. Set your own password.
-- For internet-facing use, put this behind Nginx + HTTPS.
 
+- If `.env` is missing, the app falls back to `changeme123`. Change that.
+- If you ever expose this to the internet, put it behind Nginx or another reverse proxy with HTTPS.

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consistency Tracker Preview</title>
+    <style>
+      :root {
+        --bg: #f3f4f6;
+        --card: #ffffff;
+        --text: #111827;
+        --muted: #6b7280;
+        --line: #d1d5db;
+        --accent: #15803d;
+        --danger: #be123c;
+        --level-0: #d7dde4;
+        --level-1: #b5e3bf;
+        --level-2: #7ccf8f;
+        --level-3: #3aad61;
+        --level-4: #1f7a41;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        background: radial-gradient(circle at top left, #fafafa, var(--bg));
+        color: var(--text);
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 24px;
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .topbar h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+
+      .logout {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--text);
+        padding: 8px 12px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 16px;
+        max-width: 1180px;
+        margin: 20px auto;
+        padding: 0 16px 24px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px;
+      }
+
+      .add { grid-column: span 4; }
+      .stats { grid-column: span 8; }
+      .today { grid-column: span 7; }
+      .archived { grid-column: span 5; }
+      .heatmap { grid-column: span 12; }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 20px;
+      }
+
+      .input-row {
+        display: flex;
+        gap: 8px;
+      }
+
+      .fake-input,
+      .fake-small {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 10px 12px;
+        color: #9ca3af;
+      }
+
+      .fake-input { flex: 1; }
+      .fake-small { width: 92px; text-align: center; color: var(--text); }
+      .fake-btn {
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        padding: 10px 14px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stat {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      .stat-label {
+        color: var(--muted);
+        font-size: 12px;
+        display: block;
+      }
+
+      .stat-value {
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .task {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        margin-bottom: 10px;
+      }
+
+      .task-main {
+        flex: 1;
+      }
+
+      .task-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .check {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        background: var(--accent);
+      }
+
+      .weekly-text {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+
+      .weekly-bar {
+        width: 100%;
+        height: 8px;
+        border-radius: 999px;
+        background: #e5e7eb;
+        overflow: hidden;
+      }
+
+      .weekly-fill {
+        height: 100%;
+        background: #3aad61;
+        border-radius: 999px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .chip {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        background: #fff;
+        font-size: 13px;
+      }
+
+      .archived-box {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .heat-top {
+        display: grid;
+        grid-template-columns: 36px auto;
+        column-gap: 8px;
+        align-items: end;
+        margin-bottom: 6px;
+      }
+
+      .month-row {
+        position: relative;
+        height: 16px;
+      }
+
+      .month-row span {
+        position: absolute;
+        top: 0;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .heat-body {
+        display: grid;
+        grid-template-columns: 36px auto;
+        column-gap: 8px;
+      }
+
+      .day-labels {
+        display: grid;
+        grid-template-rows: repeat(7, 14px);
+        gap: 4px;
+        font-size: 11px;
+        color: var(--muted);
+        text-align: right;
+      }
+
+      .grid {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: repeat(7, 14px);
+        gap: 4px;
+      }
+
+      .cell {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        border: 1px solid rgba(27, 31, 35, 0.08);
+      }
+
+      .l0 { background: #d7dde4; }
+      .l0b { background: #c6ced8; }
+      .l1 { background: #b5e3bf; }
+      .l2 { background: #7ccf8f; }
+      .l3 { background: #3aad61; }
+      .l4 { background: #1f7a41; }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>Consistency Tracker</h1>
+      <div class="logout">Logout</div>
+    </header>
+
+    <main class="layout">
+      <section class="card add">
+        <h2>Add Task</h2>
+        <div class="input-row">
+          <div class="fake-input">e.g. 20 min workout</div>
+          <div class="fake-small">4</div>
+          <div class="fake-btn">Add</div>
+        </div>
+      </section>
+
+      <section class="card stats">
+        <h2>Stats</h2>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-label">Active Tasks</span><span class="stat-value">5</span></div>
+          <div class="stat"><span class="stat-label">Weekly Goals Met</span><span class="stat-value">3/5</span></div>
+          <div class="stat"><span class="stat-label">Current Streak</span><span class="stat-value">9</span></div>
+          <div class="stat"><span class="stat-label">Completion Rate</span><span class="stat-value">78.4%</span></div>
+        </div>
+      </section>
+
+      <section class="card today">
+        <h2>Today's Tasks</h2>
+        <div class="task">
+          <div class="task-main">
+            <div class="task-title"><div class="check"></div><strong>Workout</strong></div>
+            <div class="weekly-text">3/4 this week</div>
+            <div class="weekly-bar"><div class="weekly-fill" style="width: 75%"></div></div>
+          </div>
+          <div class="actions"><div class="chip">Goal</div><div class="chip">Edit</div><div class="chip">Archive</div></div>
+        </div>
+        <div class="task">
+          <div class="task-main">
+            <div class="task-title"><div class="check"></div><strong>Read 20 min</strong></div>
+            <div class="weekly-text">5/5 this week</div>
+            <div class="weekly-bar"><div class="weekly-fill" style="width: 100%; background: #1f7a41"></div></div>
+          </div>
+          <div class="actions"><div class="chip">Goal</div><div class="chip">Edit</div><div class="chip">Archive</div></div>
+        </div>
+      </section>
+
+      <section class="card archived">
+        <h2>Archived Tasks</h2>
+        <div class="archived-box">Daily coding practice (3x/week)</div>
+        <div class="archived-box">Stretching (4x/week)</div>
+      </section>
+
+      <section class="card heatmap">
+        <h2>Year Heatmap</h2>
+        <div class="heat-top">
+          <div></div>
+          <div class="month-row">
+            <span style="left: 0px">Jan</span>
+            <span style="left: 95px">Feb</span>
+            <span style="left: 180px">Mar</span>
+            <span style="left: 275px">Apr</span>
+            <span style="left: 365px">May</span>
+            <span style="left: 455px">Jun</span>
+            <span style="left: 545px">Jul</span>
+            <span style="left: 640px">Aug</span>
+            <span style="left: 730px">Sep</span>
+            <span style="left: 820px">Oct</span>
+            <span style="left: 915px">Nov</span>
+            <span style="left: 1005px">Dec</span>
+          </div>
+        </div>
+        <div class="heat-body">
+          <div class="day-labels">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+          <div class="grid">
+            <div class="cell l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l0"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l0"></div>
+            <div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l0b"></div>
+            <div class="cell l0"></div><div class="cell l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell l1"></div>
+            <div class="cell l0b"></div><div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l1"></div><div class="cell l0b"></div>
+            <div class="cell l0"></div><div class="cell l1"></div><div class="cell l1"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l2"></div><div class="cell l0"></div>
+            <div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l0b"></div>
+            <div class="cell l0"></div><div class="cell l0"></div><div class="cell l1"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l0"></div>
+            <div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l0b"></div>
+            <div class="cell l0"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l0"></div>
+            <div class="cell l0b"></div><div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l4"></div><div class="cell l3"></div><div class="cell l0b"></div>
+            <div class="cell l0"></div><div class="cell l1"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l1"></div><div class="cell l0"></div>
+            <div class="cell l0b"></div><div class="cell l1"></div><div class="cell l2"></div><div class="cell l3"></div><div class="cell l3"></div><div class="cell l2"></div><div class="cell l0b"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
