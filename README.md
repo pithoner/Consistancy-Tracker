@@ -73,4 +73,3 @@ http://your-server-ip:3000
 ## Notes
 
 - If `.env` is missing, the app falls back to `changeme123`. Change that.
-- If you ever expose this to the internet, put it behind Nginx or another reverse proxy with HTTPS.
