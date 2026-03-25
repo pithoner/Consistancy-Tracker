@@ -4,16 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login | Consistency Tracker</title>
+    <script>
+      (function () {
+        const saved = localStorage.getItem('ct-theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && prefersDark)) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+    <link id="site-favicon" rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body class="auth-body">
     <main class="card auth-card">
-      <h1>Consistency Tracker</h1>
+      <div class="auth-brand">
+        <img
+          class="auth-brand-logo"
+          src="/static/logo.svg"
+          data-theme-logo
+          data-light-src="/static/logo.svg"
+          data-dark-src="/static/logo-dark.svg"
+          alt="Consistency Tracker logo"
+        />
+      </div>
       <p>Enter your password</p>
       <form method="post" action="/login" class="auth-form">
         <input type="password" name="password" placeholder="Password" required />
         <button type="submit">Login</button>
       </form>
     </main>
+    <script src="/static/theme.js"></script>
   </body>
 </html>
