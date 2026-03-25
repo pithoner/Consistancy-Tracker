@@ -157,12 +157,17 @@ body {
   padding: 0 16px 24px;
 }
 
+.layout > * {
+  min-width: 0;
+}
+
 .card {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 16px;
   box-shadow: var(--shadow);
+  min-width: 0;
 }
 
 .auth-card {
@@ -229,6 +234,10 @@ button:hover {
   margin-bottom: 12px;
 }
 
+.section-head > * {
+  min-width: 0;
+}
+
 .today-list,
 .archived-list,
 .day-details {
@@ -255,13 +264,14 @@ button:hover {
 
 .today-main {
   flex: 1;
-  min-width: 220px;
+  min-width: 0;
 }
 
 .actions {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .check-row {
@@ -270,6 +280,14 @@ button:hover {
   gap: 10px;
   cursor: pointer;
   flex: 1;
+  min-width: 0;
+}
+
+.today-name,
+.archived-name,
+.day-item span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .today-checkbox {
