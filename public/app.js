@@ -11,10 +11,13 @@ const heatmapInnerEl = document.getElementById('heatmap-inner');
 const dayTitleEl = document.getElementById('day-title');
 const daySummaryEl = document.getElementById('day-summary');
 const dayDetailsEl = document.getElementById('day-details');
+const currentDatetimeEl = document.getElementById('current-datetime');
+const currentDayCountEl = document.getElementById('current-day-count');
 const todayTemplate = document.getElementById('today-item-template');
 const archivedTemplate = document.getElementById('archived-item-template');
 
 let state = null;
+let clockTimer = null;
 
 function weekdayFromDay(day) {
   const [y, m, d] = day.split('-').map(Number);
@@ -31,9 +34,11 @@ function dayOfYearInfo(day) {
   const date = parseDay(day);
   const year = date.getFullYear();
   const start = new Date(year, 0, 1);
+  const end = new Date(year + 1, 0, 1);
   const oneDay = 1000 * 60 * 60 * 24;
   const index = Math.floor((date - start) / oneDay) + 1;
-  return { index };
+  const total = Math.floor((end - start) / oneDay);
+  return { index, total };
 }
 
 function prettyDay(day) {
@@ -43,6 +48,26 @@ function prettyDay(day) {
     month: 'short',
     day: 'numeric'
   });
+}
+
+function formatDayCount(day) {
+  const info = dayOfYearInfo(day);
+  return `${info.index}/${info.total}`;
+}
+
+function updateTopbarClock() {
+  const now = new Date();
+  const currentDay = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  currentDatetimeEl.textContent = now.toLocaleString(undefined, {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+  currentDayCountEl.textContent = formatDayCount(currentDay);
 }
 
 function monthShort(day) {
@@ -362,8 +387,7 @@ function renderHeatmap(data) {
 
 function renderSelectedDay(data) {
   const summary = data.selectedSummary;
-  const doy = dayOfYearInfo(summary.day);
-  dayTitleEl.textContent = `Day Details - ${prettyDay(summary.day)} (Day #${doy.index})`;
+  dayTitleEl.textContent = `Day Details - ${prettyDay(summary.day)} (${formatDayCount(summary.day)})`;
   daySummaryEl.textContent = `${summary.completed} of ${summary.total} active tasks completed`;
 
   dayDetailsEl.innerHTML = '';
@@ -411,4 +435,6 @@ habitForm.addEventListener('submit', async (event) => {
 });
 
 reloadBtn.addEventListener('click', () => load(state ? state.selectedDay : ''));
+updateTopbarClock();
+clockTimer = window.setInterval(updateTopbarClock, 30000);
 load();
