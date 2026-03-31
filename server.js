@@ -8,6 +8,7 @@ const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const APP_PASSWORD = process.env.APP_PASSWORD || 'changeme123';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-secret-change-me';
+const APP_TIMEZONE = process.env.APP_TIMEZONE || process.env.TZ || 'UTC';
 const DEFAULT_WEEKLY_TARGET = 4;
 const DATA_DIR = process.env.DATA_DIR
   ? path.resolve(process.env.DATA_DIR)
@@ -46,7 +47,7 @@ if (!habitColumns.some((column) => column.name === 'weekly_target')) {
 const listActiveHabitsStmt = db.prepare('SELECT id, name, created_at, weekly_target FROM habits WHERE archived = 0 ORDER BY created_at ASC, id ASC');
 const listArchivedHabitsStmt = db.prepare('SELECT id, name, created_at, weekly_target FROM habits WHERE archived = 1 ORDER BY created_at ASC, id ASC');
 const listHabitsByStateStmt = db.prepare('SELECT id, name, created_at, archived, weekly_target FROM habits WHERE archived = ? ORDER BY created_at ASC, id ASC');
-const addHabitStmt = db.prepare('INSERT INTO habits (name, weekly_target) VALUES (?, ?)');
+const addHabitStmt = db.prepare('INSERT INTO habits (name, weekly_target, created_at) VALUES (?, ?, ?)');
 const deleteHabitStmt = db.prepare('DELETE FROM habits WHERE id = ?');
 const updateHabitNameStmt = db.prepare('UPDATE habits SET name = ? WHERE id = ?');
 const updateHabitTargetStmt = db.prepare('UPDATE habits SET weekly_target = ? WHERE id = ?');
@@ -119,6 +120,18 @@ function formatLocalDay(date) {
   return `${y}-${m}-${d}`;
 }
 
+function formatAppDay(date) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: APP_TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(date);
+
+  const values = Object.fromEntries(parts.filter((part) => part.type !== 'literal').map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
 function parseDay(day) {
   const [y, m, d] = day.split('-').map(Number);
   return new Date(y, m - 1, d);
@@ -189,13 +202,14 @@ function summarizeForDay(day, habits, doneMap) {
 
 function buildDashboard(year, selectedDay) {
   const now = new Date();
-  const today = formatLocalDay(now);
+  const today = formatAppDay(now);
+  const zonedToday = parseDay(today);
   const habits = listActiveHabitsStmt.all();
   const archivedHabits = listArchivedHabitsStmt.all();
   const habitsById = new Map(habits.map((habit) => [habit.id, habit]));
 
-  const weekStart = formatLocalDay(startOfWeekMonday(now));
-  const weekEnd = formatLocalDay(endOfWeekMonday(now));
+  const weekStart = formatLocalDay(startOfWeekMonday(zonedToday));
+  const weekEnd = formatLocalDay(endOfWeekMonday(zonedToday));
 
   const yearStart = startOfYear(year);
   const yearEnd = endOfYear(year);
@@ -363,7 +377,7 @@ app.post('/api/habits', authRequired, (req, res) => {
   }
 
   try {
-    const result = addHabitStmt.run(name, weeklyTarget);
+    const result = addHabitStmt.run(name, weeklyTarget, formatAppDay(new Date()));
     return res.status(201).json({ id: result.lastInsertRowid, name, weeklyTarget });
   } catch (error) {
     return res.status(409).json({ error: 'Task already exists.' });
@@ -453,8 +467,7 @@ app.delete('/api/habits/:id', authRequired, (req, res) => {
 });
 
 app.get('/api/dashboard', authRequired, (req, res) => {
-  const now = new Date();
-  const defaultYear = now.getFullYear();
+  const defaultYear = Number(formatAppDay(new Date()).slice(0, 4));
   const year = Math.min(Math.max(Number(req.query.year || defaultYear), 1970), 2100);
   const selectedDay = String(req.query.day || '');
 
@@ -463,7 +476,7 @@ app.get('/api/dashboard', authRequired, (req, res) => {
 
 app.post('/api/today/toggle', authRequired, (req, res) => {
   const habitId = Number(req.body.habitId);
-  const today = formatLocalDay(new Date());
+  const today = formatAppDay(new Date());
 
   if (!Number.isInteger(habitId) || habitId <= 0) {
     return res.status(400).json({ error: 'Invalid task id.' });

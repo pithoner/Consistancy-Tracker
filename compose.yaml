@@ -9,6 +9,8 @@ services:
     environment:
       PORT: 3000
       DATA_DIR: /app/data
+      APP_TIMEZONE: ${APP_TIMEZONE:-UTC}
+      TZ: ${APP_TIMEZONE:-UTC}
     volumes:
       - tracker-data:/app/data
     restart: unless-stopped

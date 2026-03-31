@@ -35,6 +35,7 @@ Then open [http://localhost:3000](http://localhost:3000).
 Set these in `.env`:
 - `APP_PASSWORD`
 - `SESSION_SECRET`
+- `APP_TIMEZONE`
 
 ## Docker run
 
@@ -73,3 +74,4 @@ http://your-server-ip:3000
 ## Notes
 
 - If `.env` is missing, the app falls back to `changeme123`. Change that.
+- If the top bar date looks right but the heatmap/tasks are a day ahead or behind, set `APP_TIMEZONE` in `.env` to your local timezone, for example `America/Guatemala`.
