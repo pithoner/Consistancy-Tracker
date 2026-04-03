@@ -47,6 +47,7 @@ if (!habitColumns.some((column) => column.name === 'weekly_target')) {
 const listActiveHabitsStmt = db.prepare('SELECT id, name, created_at, weekly_target FROM habits WHERE archived = 0 ORDER BY created_at ASC, id ASC');
 const listArchivedHabitsStmt = db.prepare('SELECT id, name, created_at, weekly_target FROM habits WHERE archived = 1 ORDER BY created_at ASC, id ASC');
 const listHabitsByStateStmt = db.prepare('SELECT id, name, created_at, archived, weekly_target FROM habits WHERE archived = ? ORDER BY created_at ASC, id ASC');
+const getHabitByIdStmt = db.prepare('SELECT id, name, created_at, archived, weekly_target FROM habits WHERE id = ?');
 const addHabitStmt = db.prepare('INSERT INTO habits (name, weekly_target, created_at) VALUES (?, ?, ?)');
 const deleteHabitStmt = db.prepare('DELETE FROM habits WHERE id = ?');
 const updateHabitNameStmt = db.prepare('UPDATE habits SET name = ? WHERE id = ?');
@@ -77,6 +78,17 @@ const getCompletedByHabitInRangeStmt = db.prepare(`
   JOIN habits h ON h.id = c.habit_id
   WHERE c.day BETWEEN ? AND ? AND c.done = 1 AND h.archived = 0
   GROUP BY c.habit_id
+`);
+const getCheckinsForRangeByHabitStmt = db.prepare(`
+  SELECT c.habit_id, c.day, c.done
+  FROM checkins c
+  WHERE c.day BETWEEN ? AND ? AND c.done = 1 AND c.habit_id = ?
+`);
+const getCompletedByDayByHabitStmt = db.prepare(`
+  SELECT c.day, COUNT(*) AS completed
+  FROM checkins c
+  WHERE c.day BETWEEN ? AND ? AND c.done = 1 AND c.habit_id = ?
+  GROUP BY c.day
 `);
 const getCompletedAllTimeActiveStmt = db.prepare(`
   SELECT COUNT(*) AS total
@@ -200,13 +212,13 @@ function summarizeForDay(day, habits, doneMap) {
   };
 }
 
-function buildDashboard(year, selectedDay) {
+function buildDashboard(year, selectedDay, heatmapHabitId) {
   const now = new Date();
   const today = formatAppDay(now);
   const zonedToday = parseDay(today);
   const habits = listActiveHabitsStmt.all();
   const archivedHabits = listArchivedHabitsStmt.all();
-  const habitsById = new Map(habits.map((habit) => [habit.id, habit]));
+  const allHabits = habits.concat(archivedHabits);
 
   const weekStart = formatLocalDay(startOfWeekMonday(zonedToday));
   const weekEnd = formatLocalDay(endOfWeekMonday(zonedToday));
@@ -215,7 +227,13 @@ function buildDashboard(year, selectedDay) {
   const yearEnd = endOfYear(year);
   const dayList = daysInYear(year);
 
-  const completedRows = getCheckinsForRangeActiveStmt.all(yearStart, yearEnd);
+  const selectedHeatmapHabit = Number.isInteger(heatmapHabitId) && heatmapHabitId > 0
+    ? getHabitByIdStmt.get(heatmapHabitId)
+    : null;
+
+  const completedRows = selectedHeatmapHabit
+    ? getCheckinsForRangeByHabitStmt.all(yearStart, yearEnd, selectedHeatmapHabit.id)
+    : getCheckinsForRangeActiveStmt.all(yearStart, yearEnd);
   const doneMap = new Map();
   for (const row of completedRows) {
     doneMap.set(`${row.habit_id}|${row.day}`, 1);
@@ -227,19 +245,22 @@ function buildDashboard(year, selectedDay) {
     weeklyByHabit.set(row.habit_id, Number(row.completed));
   }
 
-  const completedByDayRows = getCompletedByDayActiveStmt.all(yearStart, yearEnd);
+  const completedByDayRows = selectedHeatmapHabit
+    ? getCompletedByDayByHabitStmt.all(yearStart, yearEnd, selectedHeatmapHabit.id)
+    : getCompletedByDayActiveStmt.all(yearStart, yearEnd);
   const completedByDay = new Map();
   for (const row of completedByDayRows) {
     completedByDay.set(row.day, Number(row.completed));
   }
 
+  const heatmapTotal = selectedHeatmapHabit ? 1 : habits.length;
   const heatmap = dayList.map((day) => {
     const completed = completedByDay.get(day) || 0;
     return {
       day,
       completed,
-      total: habits.length,
-      level: calcHeatLevel(completed, habits.length),
+      total: heatmapTotal,
+      level: calcHeatLevel(completed, heatmapTotal),
       isToday: day === today
     };
   });
@@ -303,6 +324,7 @@ function buildDashboard(year, selectedDay) {
     year,
     today,
     selectedDay: selected,
+    selectedHeatmapHabitId: selectedHeatmapHabit ? selectedHeatmapHabit.id : null,
     weekStart,
     weekEnd,
     habits,
@@ -470,8 +492,12 @@ app.get('/api/dashboard', authRequired, (req, res) => {
   const defaultYear = Number(formatAppDay(new Date()).slice(0, 4));
   const year = Math.min(Math.max(Number(req.query.year || defaultYear), 1970), 2100);
   const selectedDay = String(req.query.day || '');
+  const heatmapHabitIdRaw = Number(req.query.heatmapHabitId || 0);
+  const heatmapHabitId = Number.isInteger(heatmapHabitIdRaw) && heatmapHabitIdRaw > 0
+    ? heatmapHabitIdRaw
+    : null;
 
-  return res.json(buildDashboard(year, selectedDay));
+  return res.json(buildDashboard(year, selectedDay, heatmapHabitId));
 });
 
 app.post('/api/today/toggle', authRequired, (req, res) => {

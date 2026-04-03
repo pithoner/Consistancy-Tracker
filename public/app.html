@@ -92,7 +92,12 @@
       </section>
 
       <section class="card section-heatmap">
-        <h2>Year Heatmap</h2>
+        <div class="section-head heatmap-head">
+          <h2>Year Heatmap</h2>
+          <select id="heatmap-task-filter" class="task-filter-select" aria-label="Filter heatmap by task">
+            <option value="all">All</option>
+          </select>
+        </div>
         <p class="help-text">Darker squares = more tasks completed that day.</p>
         <div class="heatmap-scroll">
           <div id="heatmap-inner" class="heatmap-inner">

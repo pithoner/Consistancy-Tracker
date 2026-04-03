@@ -8,6 +8,7 @@ const statsEl = document.getElementById('stats');
 const monthMarkersEl = document.getElementById('month-markers');
 const heatmapEl = document.getElementById('year-heatmap');
 const heatmapInnerEl = document.getElementById('heatmap-inner');
+const heatmapTaskFilterEl = document.getElementById('heatmap-task-filter');
 const dayTitleEl = document.getElementById('day-title');
 const daySummaryEl = document.getElementById('day-summary');
 const dayDetailsEl = document.getElementById('day-details');
@@ -112,8 +113,16 @@ function buildWeeks(heatmapDays) {
   return { weeks, monthMarkers };
 }
 
-async function fetchDashboard(day = '') {
-  const query = day ? `?day=${encodeURIComponent(day)}` : '';
+function buildDashboardQuery(day = '', heatmapHabitId = null) {
+  const params = new URLSearchParams();
+  if (day) params.set('day', day);
+  if (heatmapHabitId) params.set('heatmapHabitId', String(heatmapHabitId));
+  const query = params.toString();
+  return query ? `?${query}` : '';
+}
+
+async function fetchDashboard(day = '', heatmapHabitId = null) {
+  const query = buildDashboardQuery(day, heatmapHabitId);
   const res = await fetch(`/api/dashboard${query}`);
   if (!res.ok) {
     window.location.href = '/login';
@@ -137,7 +146,7 @@ async function addHabit(name, weeklyTarget) {
 
   habitNameInput.value = '';
   weeklyTargetInput.value = '4';
-  await load();
+  await load('', state ? state.selectedHeatmapHabitId : null);
 }
 
 async function editTask(id, currentName, currentTarget) {
@@ -171,7 +180,7 @@ async function editTask(id, currentName, currentTarget) {
     return;
   }
 
-  await load(state ? state.selectedDay : '');
+  await load(state ? state.selectedDay : '', state ? state.selectedHeatmapHabitId : null);
 }
 
 async function setWeeklyGoal(id, currentTarget) {
@@ -195,7 +204,7 @@ async function setWeeklyGoal(id, currentTarget) {
     return;
   }
 
-  await load(state ? state.selectedDay : '');
+  await load(state ? state.selectedDay : '', state ? state.selectedHeatmapHabitId : null);
 }
 
 async function archiveHabit(id, name) {
@@ -207,7 +216,7 @@ async function archiveHabit(id, name) {
     return;
   }
 
-  await load(state ? state.selectedDay : '');
+  await load(state ? state.selectedDay : '', state ? state.selectedHeatmapHabitId : null);
 }
 
 async function unarchiveHabit(id) {
@@ -217,7 +226,7 @@ async function unarchiveHabit(id) {
     return;
   }
 
-  await load(state ? state.selectedDay : '');
+  await load(state ? state.selectedDay : '', state ? state.selectedHeatmapHabitId : null);
 }
 
 async function deleteHabit(id, name) {
@@ -229,7 +238,7 @@ async function deleteHabit(id, name) {
     return;
   }
 
-  await load(state ? state.selectedDay : '');
+  await load(state ? state.selectedDay : '', state ? state.selectedHeatmapHabitId : null);
 }
 
 async function toggleTodayTask(habitId) {
@@ -245,7 +254,7 @@ async function toggleTodayTask(habitId) {
     return;
   }
 
-  await load(state ? state.selectedDay : '');
+  await load(state ? state.selectedDay : '', state ? state.selectedHeatmapHabitId : null);
 }
 
 function renderTodayTasks(data) {
@@ -334,6 +343,38 @@ function renderStats(data) {
   }
 }
 
+function renderHeatmapTaskFilter(data) {
+  heatmapTaskFilterEl.innerHTML = '';
+
+  const allOption = document.createElement('option');
+  allOption.value = 'all';
+  allOption.textContent = 'All';
+  heatmapTaskFilterEl.appendChild(allOption);
+
+  for (const habit of data.habits) {
+    const option = document.createElement('option');
+    option.value = String(habit.id);
+    option.textContent = habit.name;
+    heatmapTaskFilterEl.appendChild(option);
+  }
+
+  if (data.archivedHabits.length) {
+    const divider = document.createElement('option');
+    divider.disabled = true;
+    divider.textContent = '──────── Archived';
+    heatmapTaskFilterEl.appendChild(divider);
+
+    for (const habit of data.archivedHabits) {
+      const option = document.createElement('option');
+      option.value = String(habit.id);
+      option.textContent = habit.name;
+      heatmapTaskFilterEl.appendChild(option);
+    }
+  }
+
+  heatmapTaskFilterEl.value = data.selectedHeatmapHabitId ? String(data.selectedHeatmapHabitId) : 'all';
+}
+
 function getHeatmapSizing() {
   const styles = getComputedStyle(document.documentElement);
   const cellSize = parseInt(styles.getPropertyValue('--heat-cell-size'), 10) || 14;
@@ -371,7 +412,7 @@ function renderHeatmap(data) {
       if (day.isToday) cell.classList.add('today');
 
       cell.title = `${day.day}: ${day.completed}/${day.total} completed`;
-      cell.addEventListener('click', () => load(day.day));
+      cell.addEventListener('click', () => load(day.day, data.selectedHeatmapHabitId));
       heatmapEl.appendChild(cell);
     }
   }
@@ -412,12 +453,13 @@ function render(data) {
   renderTodayTasks(data);
   renderArchivedTasks(data);
   renderStats(data);
+  renderHeatmapTaskFilter(data);
   renderHeatmap(data);
   renderSelectedDay(data);
 }
 
-async function load(day = '') {
-  const data = await fetchDashboard(day);
+async function load(day = '', heatmapHabitId = null) {
+  const data = await fetchDashboard(day, heatmapHabitId);
   if (!data) return;
   render(data);
 }
@@ -434,7 +476,11 @@ habitForm.addEventListener('submit', async (event) => {
   await addHabit(name, weeklyTarget);
 });
 
-reloadBtn.addEventListener('click', () => load(state ? state.selectedDay : ''));
+reloadBtn.addEventListener('click', () => load(state ? state.selectedDay : '', state ? state.selectedHeatmapHabitId : null));
+heatmapTaskFilterEl.addEventListener('change', () => {
+  const value = heatmapTaskFilterEl.value === 'all' ? null : Number(heatmapTaskFilterEl.value);
+  load(state ? state.selectedDay : '', value);
+});
 updateTopbarClock();
 clockTimer = window.setInterval(updateTopbarClock, 30000);
 load();

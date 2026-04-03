@@ -253,8 +253,23 @@ button:hover {
   margin-bottom: 12px;
 }
 
+.heatmap-head {
+  gap: 12px;
+}
+
 .section-head > * {
   min-width: 0;
+}
+
+.task-filter-select {
+  min-width: 180px;
+  max-width: 240px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 14px;
 }
 
 .today-list,
@@ -687,6 +702,11 @@ button:hover {
 
   .section-head .ghost-btn {
     width: 100%;
+  }
+
+  .task-filter-select {
+    width: 100%;
+    max-width: none;
   }
 
   .stats-grid {
